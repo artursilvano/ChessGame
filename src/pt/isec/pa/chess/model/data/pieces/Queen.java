@@ -4,10 +4,11 @@ import pt.isec.pa.chess.model.data.board.Board;
 
 public class Queen extends Piece {
     public Queen(Board b, int r, int c,Team team) {
-        super(b,PieceType.QUEEN,r,c,team);
+        super(b, PieceType.QUEEN, r, c, team);
     }
 
     public boolean onRange(int l, int c) {
+        if (l < 0 || l >= TAM || c < 0 || c >= TAM) return false;
         if (this.board.getPiece(l, c) != null && this.board.getPiece(l, c).getTeam().equals(this.getTeam())) return false;
 
         if ((this.getRow() != l || this.getColumn() == c) && (this.getRow() == l || this.getColumn() != c) && Math.abs(this.getRow() - l) != Math.abs(this.getColumn() - c)) {
@@ -45,9 +46,10 @@ public class Queen extends Piece {
                 }
             }
 
-            return true;
+            return myKingWillBeSafe(l,c);
         }
     }
+    public boolean especialMove(int l, int c) {return false;}
 }
 
 
