@@ -2,13 +2,18 @@ package pt.isec.pa.chess.model.data.pieces;
 import pt.isec.pa.chess.model.Constants;
 import pt.isec.pa.chess.model.data.board.Board;
 
+import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 
 import static pt.isec.pa.chess.model.data.pieces.PieceType.*;
 import static pt.isec.pa.chess.model.data.pieces.Team.*;
 
 public abstract class Piece implements Constants, Serializable {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
+
     Board board;
     private String id;
     private int row, column;
@@ -50,19 +55,22 @@ public abstract class Piece implements Constants, Serializable {
 
     public Team getTeam() { return team; }
 
-    public String getPossibilities() {
+    public List getPossibilities() {
+
         // Nao faz sentindo criarmos um Map, pq a Key (primeiro valor) nao pode se repetir
         // Fora isso, toda vez que fossemos fazer um get, seria atualizar os movimentos possiveis
         // E melhor fazer um ciclo, achar todas as possibilidades e adiciona-las numa array de coordenadas, e retornar essa array
 
-        StringBuilder sb = new StringBuilder();
+        List<Integer[]> pM = new ArrayList<Integer[]>();
+
         for (int l = 0; l < TAM; l++)
             for (int c = 0; c < TAM; c++)
                 if(this.onRange(l,c)) {
-                    sb.append("[" + l + "," + c + "] ");
+                    pM.add(new Integer[]{l,c});
                 }
 
-        return sb.toString();
+        return pM;
+
     }
 
     public void isNotFirst() { this.first = false; }
@@ -70,8 +78,6 @@ public abstract class Piece implements Constants, Serializable {
     public void setRow(int r) { this.row = r; }
 
     public void setColumn(int c) { this.column = c; }
-
-    public void setFirst_False() {this.first = false;}
 
     public void setId(String id) {this.id= id;}
 

@@ -8,5 +8,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="jdk-23.0" level="application" />
+    <orderEntry type="library" name="lib" level="application" />
+    <orderEntry type="library" name="PAJavaFx" level="application" />
   </component>
 </module>

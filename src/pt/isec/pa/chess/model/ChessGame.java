@@ -12,10 +12,15 @@ import static pt.isec.pa.chess.model.data.pieces.Team.*;
 public class ChessGame implements Constants, Serializable {
     @Serial private static final long serialVersionUID = 1L;// FACADE
 
-    public Board board; // public para testes
+    private Board board;
 
     private Team roundTeam;
     private int round;
+
+    private String pWhite;
+    private String pBlack;
+
+    public Piece selectedPiece = null;
 
     private Team winner = null;
 
@@ -29,16 +34,47 @@ public class ChessGame implements Constants, Serializable {
         importGame(filename);
     }
 
+    public String getpWhite() {
+        return pWhite;
+    }
+
+    public void setpWhite(String pWhite) {
+        this.pWhite = pWhite;
+    }
+
+    public String getpBlack() {
+        return pBlack;
+    }
+
+    public void setpBlack(String pBlack) {
+        this.pBlack = pBlack;
+    }
+
     public String showGame() { return this.roundTeam + this.board.toString(); }
 
-    public boolean makeAMove(String id, int row, int col) {
-        Piece piece = this.board.getPiece(id);
-        if (piece != null)
-            return piece.move(row, col);
+    public boolean selectPiece(int row, int col) {                                    // Seleciona peca
+        if (this.selectedPiece != null) return false;                                 // Se selecionou uma peca, nao pode selecionar outra
+
+        this.selectedPiece = this.board.getPiece(row, col);
+        if (this.selectedPiece != null && this.selectedPiece.getTeam().equals(this.roundTeam) && !this.selectedPiece.getPossibilities().isEmpty()) {
+            return true;
+        }
+
+        this.selectedPiece = null;
         return false;
     }
 
-    public int getRound() { return round; }
+    public boolean makeAMove(int row, int col) {
+        if (this.selectedPiece == null) return false;
+        if (this.selectedPiece.move(row, col)) {
+            this.selectedPiece = null;
+            this.nextRound();
+            return true;
+        }
+        return false;
+    }
+
+    public int getRound() { return this.round; }
 
     public Team currentPlayer() { return this.roundTeam; }
 
@@ -71,11 +107,10 @@ public class ChessGame implements Constants, Serializable {
         }
     }
 
-    public boolean exportGame(String filename) throws IOException {
-        try {
-            cleanEnPassant(WHITE);
+    public boolean exportGame(String filename) {
+        try (FileWriter fw = new FileWriter(filename)){
             cleanEnPassant(BLACK);
-            FileWriter fw = new FileWriter(filename);
+            cleanEnPassant(WHITE);
             fw.write(this.roundTeam.toString() + ",\n");
             for (int i = 0; i < TAM; i++)
                 for (int j = 0; j < TAM; j++)
@@ -88,12 +123,11 @@ public class ChessGame implements Constants, Serializable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     public boolean importGame(String filename) {
-        try {
-            FileReader fr = new FileReader(filename);
-            Scanner sc = new Scanner(fr);
+        try (FileReader fr = new FileReader(filename); Scanner sc = new Scanner(fr)){
             String el = sc.nextLine();
 
             this.roundTeam = el.equals("WHITE,") ? WHITE : BLACK;
@@ -101,13 +135,12 @@ public class ChessGame implements Constants, Serializable {
             el = sc.nextLine();
             this.board = new Board(el);
 
-            sc.close();
-            fr.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return true;
     }
+
 
 
 

@@ -3,15 +3,15 @@ import pt.isec.pa.chess.model.Constants;
 import pt.isec.pa.chess.model.data.pieces.*;
 
 import java.io.FileNotFoundException;
+import java.io.Serial;
 import java.io.Serializable;
-import java.util.Objects;
-import java.util.Scanner;
 
 import static pt.isec.pa.chess.model.data.pieces.PieceType.*;
 import static pt.isec.pa.chess.model.data.pieces.Team.*;
 
 public class Board implements Constants, Serializable {
-    private static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
+
     Piece[][] board;
 
     public Board() {                        // Cria tabuleiro inicial
@@ -61,11 +61,12 @@ public class Board implements Constants, Serializable {
         String[] pieces = line.split(",");
 
         for (String p : pieces) {
-            piece = createPieceByText(p);
-            this.board[piece.getRow()][piece.getColumn()] = piece;
+            if (p != null && !p.isEmpty()) {
+                piece = createPieceByText(p);
+                this.board[piece.getRow()][piece.getColumn()] = piece;
+            }
         }
     }
-
 
     public Piece createPieceByText(String id) {
         if (id.isEmpty()) return null;
@@ -82,12 +83,15 @@ public class Board implements Constants, Serializable {
         };
         if (type != null) {
             piece = type.createPiece(this,  (TAM - Character.getNumericValue(id.charAt(2))), columnToNum(Character.toUpperCase(id.charAt(1))), Character.isUpperCase(id.charAt(0)) ? WHITE : BLACK);   // Cria peca
-            if (id.length() == 3) piece.isNotFirst();
+            if (id.length() == 3) {
+                assert piece != null;
+                piece.isNotFirst();
+            }
         }
         return piece;
     }
 
-    public Piece getPiece(int x, int y) { return board[x][y] == null ? null : board[x][y]; }
+    public Piece getPiece(int x, int y) { return board[x][y] == null || board[x][y].getType().equals(ENPASSANT) ? null : board[x][y]; }
 
     public Piece getPiece(String id) {
         for(int c = 0; c < TAM; c++)
@@ -101,7 +105,6 @@ public class Board implements Constants, Serializable {
 
     public void removePiece(int l, int c) {
         board[l][c] = null;
-        /* Adicionar a lista de pecas removidas*/
     }
 
     public void addPiece(Piece piece, int l, int c) {
@@ -117,15 +120,6 @@ public class Board implements Constants, Serializable {
 
         addPiece(piece, x, y);
     }
-
-
-
-
-
-
-
-
-
 
 
 

@@ -8,7 +8,7 @@ public class enPassant extends Piece {
     public enPassant(Board b, int x, int y,Team c, String pId) {
         super(b, PieceType.ENPASSANT, x, y, c);
         setId("enP");
-        setFirst_False();
+        isNotFirst();
         idPawn = pId; // Id do peao correspondente
     }
 

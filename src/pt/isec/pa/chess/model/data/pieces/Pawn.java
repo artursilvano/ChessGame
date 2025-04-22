@@ -29,7 +29,6 @@ public class Pawn extends Piece {
 
         return false;
     }
-
     public boolean EnPassant(int l, int c) {   // passar funcoes de mover peca para funcao move
         if (this.board.getPiece(l, c) != null && this.board.getPiece(l, c).getType().equals(PieceType.ENPASSANT)) {
 
