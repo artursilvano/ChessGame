@@ -55,10 +55,11 @@ public class Board implements Constants, Serializable {
         }
     }
 
-    public Board(String line) throws FileNotFoundException {      // Cria board a partir de uma string
+
+    public Board(String[] pieces) throws FileNotFoundException {      // Cria board a partir de uma string
         this.board = new Piece[TAM][TAM];
         Piece piece;
-        String[] pieces = line.split(",");
+
 
         for (String p : pieces) {
             if (p != null && !p.isEmpty()) {
@@ -67,6 +68,7 @@ public class Board implements Constants, Serializable {
             }
         }
     }
+
 
     public Piece createPieceByText(String id) {
         if (id.isEmpty()) return null;
@@ -105,6 +107,7 @@ public class Board implements Constants, Serializable {
 
     public void removePiece(int l, int c) {
         board[l][c] = null;
+        //...
     }
 
     public void addPiece(Piece piece, int l, int c) {
@@ -122,6 +125,9 @@ public class Board implements Constants, Serializable {
     }
 
 
+    public Piece getEnPassant(int row, int col) { return board[row][col] != null && board[row][col].getType().equals(ENPASSANT) ? board[row][col] : null; }
+
+
 
 
 
@@ -132,7 +138,9 @@ public class Board implements Constants, Serializable {
         StringBuilder sb = new StringBuilder();
 
         for (int l = 0; l< TAM; l++) {
-            sb.append("\n\t _________________________________________________________\n").append(Math.abs(l-8) ).append("\t");
+
+            sb.append("\n\t _________________________________________________________\n").append(Math.abs(l-TAM) ).append("\t");
+
 
             for (int c = 0; c < TAM; c++){
                 sb.append(" | ");
@@ -151,7 +159,9 @@ public class Board implements Constants, Serializable {
         StringBuilder sb = new StringBuilder();
 
         for (int l = 0; l< TAM; l++) {
-            sb.append("\n\t _________________________________________________________\n").append(Math.abs(l-8) ).append("\t");
+
+            sb.append("\n\t _________________________________________________________\n").append(Math.abs(l-TAM) ).append("\t");
+
 
             for (int c = 0; c < TAM; c++){
                 sb.append(" | ");

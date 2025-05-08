@@ -16,13 +16,19 @@ public class Pawn extends Piece {
         if (this.getTeam().equals(Team.WHITE)) {
             if ((l == this.getRow() - 1 && c == this.getColumn() && this.board.getPiece(l, c) == null) ||
                 (l == this.getRow() - 2 && c == this.getColumn() && this.isFirst() && this.board.getPiece(l, c) == null && this.board.getPiece(l + 1, c) == null) ||
-                (this.board.getPiece(l, c) != null && Math.abs(this.getColumn() - c) == 1 && l == this.getRow() - 1 && !this.board.getPiece(l, c).getTeam().equals(this.getTeam()))) {
+
+                (((this.board.getPiece(l, c) != null && !this.board.getPiece(l, c).getTeam().equals(this.getTeam())) || (this.board.getEnPassant(l, c) != null && !this.board.getEnPassant(l, c).getTeam().equals(this.getTeam())))
+                        && Math.abs(this.getColumn() - c) == 1 && l == this.getRow() - 1)) {
+
                 return myKingWillBeSafe(l, c);
             }
         } else if (this.getTeam().equals(Team.BLACK)) {
             if ((l == this.getRow() + 1 && c == this.getColumn() && this.board.getPiece(l, c) == null) ||
                 (l == this.getRow() + 2 && c == this.getColumn() && this.isFirst() && this.board.getPiece(l, c) == null && this.board.getPiece(l - 1, c) == null) ||
-                (this.board.getPiece(l, c) != null && Math.abs(this.getColumn() - c) == 1 && l == this.getRow() + 1 && !this.board.getPiece(l, c).getTeam().equals(this.getTeam()))) {
+
+                (((this.board.getPiece(l, c) != null && !this.board.getPiece(l, c).getTeam().equals(this.getTeam())) || (this.board.getEnPassant(l, c) != null && !this.board.getEnPassant(l, c).getTeam().equals(this.getTeam())))
+                        && Math.abs(this.getColumn() - c) == 1 && l == this.getRow() + 1 )) {
+
                 return myKingWillBeSafe(l, c);
             }
         }
@@ -30,9 +36,11 @@ public class Pawn extends Piece {
         return false;
     }
     public boolean EnPassant(int l, int c) {   // passar funcoes de mover peca para funcao move
-        if (this.board.getPiece(l, c) != null && this.board.getPiece(l, c).getType().equals(PieceType.ENPASSANT)) {
 
-            this.board.removePiece(this.board.getPiece(l, c).getRow(), this.board.getPiece(l,c).getColumn()); // Mata peao correspondente
+        if ( this.board.getEnPassant(l, c) != null && !this.board.getEnPassant(l, c).getTeam().equals(this.getTeam())) {
+
+            this.board.removePiece(this.board.getEnPassant(l, c).getRow(), this.board.getEnPassant(l,c).getColumn()); // Mata peao correspondente
+
             execMove(l,c);
             return true;
         }
@@ -49,7 +57,9 @@ public class Pawn extends Piece {
         } else if (getTeam().equals(Team.BLACK)) {
             if (x == this.getRow() + 2 && y == this.getColumn() && this.isFirst() && this.board.getPiece(x, y) == null && this.board.getPiece(x - 1, y) == null) {           // Duas casas para frente, opc, apenas na primeira jogada
                 this.execMove(x, y);
-                this.board.movePiece(new enPassant(this.board, x, y,getTeam(), this.getId()), x - 1, y );
+
+                this.board.addPiece(new enPassant(this.board, x, y, getTeam(), this.getId()), x - 1, y );
+
                 return true;
             }
         }

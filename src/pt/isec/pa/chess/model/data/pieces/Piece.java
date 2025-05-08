@@ -53,14 +53,10 @@ public abstract class Piece implements Constants, Serializable {
 
     public boolean isFirst() { return first; }
 
+
     public Team getTeam() { return team; }
 
     public List getPossibilities() {
-
-        // Nao faz sentindo criarmos um Map, pq a Key (primeiro valor) nao pode se repetir
-        // Fora isso, toda vez que fossemos fazer um get, seria atualizar os movimentos possiveis
-        // E melhor fazer um ciclo, achar todas as possibilidades e adiciona-las numa array de coordenadas, e retornar essa array
-
         List<Integer[]> pM = new ArrayList<Integer[]>();
 
         for (int l = 0; l < TAM; l++)
@@ -116,10 +112,11 @@ public abstract class Piece implements Constants, Serializable {
     }
 
     public boolean myKingWillBeSafe(int r, int c) {
-        //Board auxBoard = new Board(this.board);                     // Cria board por copia
-        //auxBoard.movePiece(auxBoard.getPiece(this.id), r, c);       // Realiza suposto movimento
-        //return this.myKingIsSafe(auxBoard);                         // Verifica se movimento colocara seu proprio Rei em risco
-        return true;
+
+        Board auxBoard = new Board(this.board);                     // Cria board por copia
+        auxBoard.movePiece(auxBoard.getPiece(this.id), r, c);       // Realiza suposto movimento
+        return this.myKingIsSafe(auxBoard);                         // Verifica se movimento colocara seu proprio Rei em risco
+
     }
 
     public abstract boolean onRange(int row, int column);

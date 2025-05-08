@@ -15,7 +15,9 @@ public class enPassant extends Piece {
     public boolean onRange(int x, int y) {
         return false;
     }
-    public boolean especialMove(int l, int c) {return true;}
+
+    public boolean especialMove(int l, int c) { return false; }
+
     @Override
     public String getId() {
         return " . ";

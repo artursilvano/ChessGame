@@ -16,12 +16,17 @@ public class MenuTop extends MenuBar {
 
     private ChessGameManager gameManager;
 
+    private final RootPane root;
+
     private Menu Game,Learning,Mode;
     private MenuItem miNew,miOpen,miSave,miImport,miExport,miQuit;
-    private MenuItem miNormal,miSPM,miUndo,miRedo;
+    private MenuItem miUndo,miRedo;
+    private CheckMenuItem miNormal,miSPM;
 
-    public MenuTop(ChessGameManager gameManager) {
+    public MenuTop(ChessGameManager gameManager, RootPane root) {
         this.gameManager = gameManager;
+        this.root = root;
+
 
         createViews();
         registerHandlers();
@@ -39,13 +44,17 @@ public class MenuTop extends MenuBar {
         Game.getItems().addAll(miNew,miOpen,miSave,miImport, miExport, new SeparatorMenuItem(),miQuit);
 
         Learning = new Menu("Learning");
-        miSPM = new MenuItem("Show Possible Moves");
+
+        miSPM = new CheckMenuItem("Show Possible Moves");
+
         miUndo = new MenuItem("Undo");
         miRedo = new MenuItem("Redo");
         Learning.getItems().addAll(miSPM,miUndo,miRedo);
 
         Mode = new Menu("Mode");
-        miNormal = new MenuItem("Normal");
+
+        miNormal = new CheckMenuItem("Normal");
+
         Mode.getItems().addAll(miNormal,Learning);
 
         this.getMenus().add(Game);
@@ -53,7 +62,9 @@ public class MenuTop extends MenuBar {
     }
 
     private void registerHandlers() {
-        miNew.setOnAction(event -> {
+
+        miNew.setOnAction(_ -> {
+
             Stage janela = new Stage();
             janela.setTitle("Novo Jogo - Inserir Nomes");
 
@@ -63,11 +74,13 @@ public class MenuTop extends MenuBar {
 
             Label lbl2 = new Label("Nome jogador 2:");
             TextField txtNome2 = new TextField();
-            txtNome1.setPromptText("Nome do jogador");
+
+            txtNome2.setPromptText("Nome do jogador");
 
             Button btnOk = new Button("OK");
 
-            btnOk.setOnAction(e -> {
+            btnOk.setOnAction(_ -> {
+
                 String nome1, nome2;
 
                 nome1 = txtNome1.getText().trim();
@@ -75,15 +88,16 @@ public class MenuTop extends MenuBar {
 
                 if (!nome1.isEmpty() && !nome2.isEmpty()) {
 
-                    gameManager.createGame();
+
+
+                    this.gameManager = root.newGame();
 
                     gameManager.setWhitePlayer(nome1);
-                    System.out.println("Jogador 1: " + gameManager.getWhitePlayer());
 
                     gameManager.setBlackPlayer(nome2);
-                    System.out.println("Jogador 2: " + gameManager.getBlackPlayer());
-
                     janela.close();
+                    root.updateInit();
+
                 }
             });
 
@@ -95,7 +109,9 @@ public class MenuTop extends MenuBar {
             janela.showAndWait();
         });
 
-        miOpen.setOnAction(event -> {
+
+        miOpen.setOnAction(_ -> {
+
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Abrir jogo de xadrez");
             fileChooser.getExtensionFilters().addAll(
@@ -107,11 +123,13 @@ public class MenuTop extends MenuBar {
 
             if (selectedFile != null) {
                 try {
-                    gameManager.openThis(selectedFile.getAbsolutePath());
-                    System.out.println("Jogo carregado: " + selectedFile.getName());
+
+                    this.gameManager.openThis(selectedFile.getAbsolutePath());
+                    root.updateInit();
+
                     // Aqui poderias também atualizar a UI, se necessário
-                    System.out.println("Jogador 1: " + gameManager.getWhitePlayer());
-                    System.out.println("Jogador 2: " + gameManager.getBlackPlayer());
+
+
 
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
@@ -121,7 +139,9 @@ public class MenuTop extends MenuBar {
             }
         });
 
-        miSave.setOnAction(event -> {
+
+        miSave.setOnAction(_ -> {
+
             if(gameManager.gameExists()){
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Guardar jogo de xadrez");
@@ -135,7 +155,9 @@ public class MenuTop extends MenuBar {
                 if (fileToSave != null) {
                     try {
                         gameManager.saveThis(fileToSave.getAbsolutePath());
-                        System.out.println("Jogo guardado em: " + fileToSave.getName());
+
+
+
                     } catch (IOException e) {
                         e.printStackTrace();
                         Alert alert = new Alert(Alert.AlertType.ERROR, "Erro ao guardar o jogo:\n" + e.getMessage());
@@ -149,7 +171,9 @@ public class MenuTop extends MenuBar {
             }
         });
 
-        miImport.setOnAction(event -> {
+
+        miImport.setOnAction(_ -> {
+
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Importar jogo parcial");
             fileChooser.getExtensionFilters().addAll(
@@ -161,9 +185,44 @@ public class MenuTop extends MenuBar {
 
             if (selectedFile != null) {
                 try {
-                    // Lê e processa o conteúdo do ficheiro
-                    gameManager.importThis(selectedFile.getAbsolutePath()); // ← Criar este método no gameManager
-                    System.out.println("Jogo parcial importado com sucesso.");
+
+                    gameManager.importThis(selectedFile.getAbsolutePath());
+                    root.updateInit();
+
+                    Stage janela = new Stage();
+                    janela.setTitle("Jogo Importado - Inserir Nomes");
+
+                    Label lbl1 = new Label("Nome jogador 1:");
+                    TextField txtNome1 = new TextField();
+                    txtNome1.setPromptText("Nome do jogador");
+
+                    Label lbl2 = new Label("Nome jogador 2:");
+                    TextField txtNome2 = new TextField();
+                    txtNome2.setPromptText("Nome do jogador");
+
+                    Button btnOk = new Button("OK");
+
+                    btnOk.setOnAction(_ -> {
+                        String nome1, nome2;
+                        nome1 = txtNome1.getText().trim();
+                        nome2 = txtNome2.getText().trim();
+
+                        if (!nome1.isEmpty() && !nome2.isEmpty()) {
+                            gameManager.setWhitePlayer(nome1);
+                            gameManager.setBlackPlayer(nome2);
+                            janela.close();
+                            root.update();
+                        }
+                    });
+
+                    VBox layout = new VBox(10, lbl1, txtNome1, lbl2, txtNome2, btnOk);
+                    layout.setStyle("-fx-padding: 20; -fx-alignment: center;");
+
+                    Scene scene = new Scene(layout, 250, 150);
+                    janela.setScene(scene);
+                    janela.showAndWait();
+
+
                 } catch (IOException e) {
                     e.printStackTrace();
                     Alert alert = new Alert(Alert.AlertType.ERROR, "Erro ao importar o jogo:\n" + e.getMessage());
@@ -172,7 +231,9 @@ public class MenuTop extends MenuBar {
             }
         });
 
-        miExport.setOnAction(event -> {
+
+        miExport.setOnAction(_ -> {
+
             if(gameManager.gameExists()){
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Exportar jogo parcial");
@@ -186,7 +247,9 @@ public class MenuTop extends MenuBar {
             if (fileToSave != null) {
                 try {
                     gameManager.exportThis(fileToSave.getAbsolutePath()); // Criar este método
-                    System.out.println("Jogo exportado com sucesso para: " + fileToSave.getAbsolutePath());
+
+
+
                 } catch (IOException e) {
                     e.printStackTrace();
                     Alert alert = new Alert(Alert.AlertType.ERROR, "Erro ao exportar o jogo:\n" + e.getMessage());
@@ -199,13 +262,20 @@ public class MenuTop extends MenuBar {
             }
         });
 
-        miQuit.setOnAction(actionEvent -> {
+
+        miQuit.setOnAction(_ -> {
             Platform.exit();
         });
+
+        miNormal.setOnAction(event -> {
+            Learning.setDisable(miNormal.isSelected());
+        });
+
 
     }
     private void update() {
         miUndo.setDisable(true);
         miRedo.setDisable(true);
+
     }
 }
