@@ -8,6 +8,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import pt.isec.pa.chess.model.ChessGameManager;
+import pt.isec.pa.chess.model.ModelLog;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,16 +89,14 @@ public class MenuTop extends MenuBar {
 
                 if (!nome1.isEmpty() && !nome2.isEmpty()) {
 
-
-
                     this.gameManager = root.newGame();
 
                     gameManager.setWhitePlayer(nome1);
 
                     gameManager.setBlackPlayer(nome2);
                     janela.close();
-                    root.updateInit();
 
+                    ModelLog.getInstance().addLog("Cria um novo Jogo");
                 }
             });
 
@@ -125,7 +124,6 @@ public class MenuTop extends MenuBar {
                 try {
 
                     this.gameManager.openThis(selectedFile.getAbsolutePath());
-                    root.updateInit();
 
                     // Aqui poderias também atualizar a UI, se necessário
 
@@ -187,7 +185,6 @@ public class MenuTop extends MenuBar {
                 try {
 
                     gameManager.importThis(selectedFile.getAbsolutePath());
-                    root.updateInit();
 
                     Stage janela = new Stage();
                     janela.setTitle("Jogo Importado - Inserir Nomes");
@@ -211,7 +208,6 @@ public class MenuTop extends MenuBar {
                             gameManager.setWhitePlayer(nome1);
                             gameManager.setBlackPlayer(nome2);
                             janela.close();
-                            root.update();
                         }
                     });
 
@@ -270,6 +266,11 @@ public class MenuTop extends MenuBar {
         miNormal.setOnAction(event -> {
             Learning.setDisable(miNormal.isSelected());
         });
+
+        miSPM.setOnAction(event -> {
+            miNormal.setDisable(miSPM.isSelected());
+        });
+
 
 
     }

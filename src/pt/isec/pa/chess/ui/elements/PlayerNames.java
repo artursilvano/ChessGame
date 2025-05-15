@@ -19,9 +19,19 @@ public class PlayerNames extends VBox {
 
         this.setSpacing(10);
         this.getChildren().addAll(lblPlayer1, lblPlayer2, lblCurrentPlayer);
+
+        createViews();
+
+        gameManager.addPropertyChangeListener("setName", event -> createViews());
+        gameManager.addPropertyChangeListener("newRound", evt -> {
+            String current = (gameManager.GMgetTeam() == Team.WHITE
+                    ? gameManager.getWhitePlayer()
+                    : gameManager.getBlackPlayer());
+            lblCurrentPlayer.setText("Current Player: " + gameManager.GMgetTeam().toString() + " - " + current);
+        });
     }
 
-    public void update() {
+    public void createViews() {
         lblPlayer1.setText("Player 1: " + gameManager.getWhitePlayer());
         lblPlayer2.setText("Player 2: " + gameManager.getBlackPlayer());
         String current = (gameManager.GMgetTeam() == Team.WHITE

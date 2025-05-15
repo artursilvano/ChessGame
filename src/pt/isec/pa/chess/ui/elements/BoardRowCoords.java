@@ -2,24 +2,47 @@ package pt.isec.pa.chess.ui.elements;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import pt.isec.pa.chess.model.ChessGameManager;
 
 public class BoardRowCoords extends VBox {
 
-    BoardRowCoords(ChessGameManager gameManager, int wh) {
+    private final FullBoard fb;
+    private final ChessGameManager gameManager;
+
+    BoardRowCoords(ChessGameManager gameManager, FullBoard fb) {
+        this.fb = fb;
+        this.gameManager = gameManager;
         this.setAlignment(Pos.CENTER);
-        this.setPrefWidth(20);
-        this.setPrefHeight(wh);
+
+        handleSizeChange();
+    }
+
+    public void handleSizeChange() {
+        this.getChildren().clear();
+        this.setWidth(fb.getMinSize() * 0.05);
+        this.setHeight(fb.getMinSize() * 0.9);
 
         Label l;
         for (int i = 0; i < gameManager.getBoardSize(); i++) {
             l = new Label(Integer.toString(gameManager.getBoardSize() - i));
-            l.setPrefHeight((double) wh / gameManager.getBoardSize());
+            l.setPrefHeight(this.getHeight() / gameManager.getBoardSize());
             l.setAlignment(Pos.CENTER);
-            l.setFont(Font.font("Verdana", FontWeight.BOLD, 15));
+            l.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+            l.setStyle("-fx-text-fill: #000000;" +
+                    "-fx-background-color: #f0d9b5;" +
+                    "-fx-font-size: 12px;" +
+                    "-fx-padding: 10px;" +
+                    "-fx-border-color: #000000;"
+                    );
+
+
+
+
             this.getChildren().add(l);
         }
     }

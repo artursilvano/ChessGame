@@ -66,7 +66,6 @@ public abstract class Piece implements Constants, Serializable {
                 }
 
         return pM;
-
     }
 
     public void isNotFirst() { this.first = false; }

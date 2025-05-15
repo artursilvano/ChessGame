@@ -90,6 +90,16 @@ public class ChessGame implements Constants, Serializable {
         return false;
     }
 
+    public Integer[] getPieceCoords(String pieceId) {
+        Integer[] coords = new Integer[2];
+        if (board.getPiece(pieceId) != null) {
+            coords[0] = board.getPiece(pieceId).getRow();
+            coords[1] = board.getPiece(pieceId).getColumn();
+            return coords;
+        }
+        return null;
+    }
+
     public boolean makeAMove(int row, int col) {
         if (this.selectedPiece == null) return false;
         if (this.selectedPiece.move(row, col)) {
@@ -180,6 +190,7 @@ public class ChessGame implements Constants, Serializable {
         }
         return true;
     }
+
 
 
 }
