@@ -80,6 +80,7 @@ public class ChessGame implements Constants, Serializable {
 
     public boolean selectPiece(int row, int col) {                                    // Seleciona peca
         //if (this.selectedPiece != null) return false;                                 // Se selecionou uma peca, nao pode selecionar outra
+        if (board.getPiece(row, col) == null) return false;
 
         this.selectedPiece = this.board.getPiece(row, col);
         if (this.selectedPiece != null && this.selectedPiece.getTeam().equals(this.roundTeam) && !this.selectedPiece.getPossibilities().isEmpty()) {
@@ -128,6 +129,7 @@ public class ChessGame implements Constants, Serializable {
                     if (!this.board.getPiece(l, c).getPossibilities().isEmpty()) return false;
                 }
 
+        // Verificar o ganhador ou empate
         this.winner = this.roundTeam == WHITE ? BLACK : WHITE;
         return true;
 

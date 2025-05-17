@@ -91,7 +91,9 @@ public abstract class Piece implements Constants, Serializable {
     public boolean posIsSafe(Board b, int x, int y) {
         for(int i = 0; i < TAM; ++i)
             for(int j = 0; j < TAM; ++j)
-                if (b.getPiece(j, i) != null && !b.getPiece(j, i).getTeam().equals(this.team) && b.getPiece(j, i).onRange(x, y)) return false;
+                if (b.getPiece(j, i) != null && !b.getPiece(j, i).getTeam().equals(this.team))  // Se for uma peca de outra cor
+                    if (b.getPiece(j, i).onRange(x, y))                                         // Verifica se a peca inimiga pode se mover para a posicao
+                        return false;                                                           // Se puder, a posicao nao e segura
 
         return true;
     }
@@ -112,8 +114,8 @@ public abstract class Piece implements Constants, Serializable {
 
     public boolean myKingWillBeSafe(int r, int c) {
 
-        Board auxBoard = new Board(this.board);                     // Cria board por copia
-        auxBoard.movePiece(auxBoard.getPiece(this.id), r, c);       // Realiza suposto movimento
+        Board auxBoard = new Board(this.board);                                             // Cria board por copia
+        auxBoard.movePiece(auxBoard.getPiece(this.getRow(), this.getColumn()), r, c);       // Realiza suposto movimento
         return this.myKingIsSafe(auxBoard);                         // Verifica se movimento colocara seu proprio Rei em risco
 
     }

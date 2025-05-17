@@ -5,6 +5,7 @@ import pt.isec.pa.chess.model.data.pieces.*;
 import java.io.FileNotFoundException;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Arrays;
 
 import static pt.isec.pa.chess.model.data.pieces.PieceType.*;
 import static pt.isec.pa.chess.model.data.pieces.Team.*;
@@ -60,7 +61,6 @@ public class Board implements Constants, Serializable {
         this.board = new Piece[TAM][TAM];
         Piece piece;
 
-
         for (String p : pieces) {
             if (p != null && !p.isEmpty()) {
                 piece = createPieceByText(p);
@@ -115,13 +115,10 @@ public class Board implements Constants, Serializable {
     }
 
     public void movePiece(Piece piece, int x, int y) {
-        for (int i = 0; i < TAM; i++)
-            for (int j = 0; j < TAM; j++)
-                if (board[i][j] != null && board[i][j] == piece) {
-                    board[i][j] = null;
-                }
-
-        addPiece(piece, x, y);
+        if (piece != null) {
+            board[piece.getRow()][piece.getColumn()] = null;
+            addPiece(piece, x, y);
+        }
     }
 
 

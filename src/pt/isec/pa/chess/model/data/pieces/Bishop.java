@@ -27,7 +27,7 @@ public class Bishop extends Piece {
                 if (this.getColumn() > c) --j;
                 else ++j;
             }
-        return myKingWillBeSafe(l,c);
+        return myKingWillBeSafe(l, c);
         }
 
     }
