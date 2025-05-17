@@ -30,8 +30,8 @@ public class ChessGameManager implements Constants{
         boolean gameExists = gameExists();
         ChessGame = new ChessGame();
 
-        if (!gameExists) pcs.firePropertyChange("initGame", null, null);
-        else pcs.firePropertyChange("newGame", null, null);
+        if (!gameExists)    pcs.firePropertyChange(PROP.initGame, null, null);
+        else                pcs.firePropertyChange(PROP.newGame, null, null);
 
     }
 
@@ -41,11 +41,11 @@ public class ChessGameManager implements Constants{
     }
     public void setWhitePlayer(String pWhite) {
         ChessGame.setpWhite(pWhite);
-        pcs.firePropertyChange("setName", null, null);
+        pcs.firePropertyChange(PROP.setName, null, null);
     }
     public void setBlackPlayer(String pBlack) {
         ChessGame.setpBlack(pBlack);
-        pcs.firePropertyChange("setName", null, null);
+        pcs.firePropertyChange(PROP.setName, null, null);
     }
 
 
@@ -60,7 +60,7 @@ public class ChessGameManager implements Constants{
     public List<Integer[]> GMgetPiecePossibilities() { return ChessGame.getPiecePossibilities(); }
     public boolean GMselectPiece(int row, int col) {
         if (ChessGame.selectPiece(row, col)) {
-            pcs.firePropertyChange("select",null,null);
+            pcs.firePropertyChange(PROP.select,null,null);
             return true;
         }
         return false;
@@ -68,7 +68,7 @@ public class ChessGameManager implements Constants{
     public boolean GMmakeAMove(int row, int col) {
         String piece = GMgetSelectedPiece();
          if (ChessGame.makeAMove(row, col)) {
-             pcs.firePropertyChange("newRound",null,null);
+             pcs.firePropertyChange(PROP.newRound,null,null);
              ModelLog.getInstance().addLog(piece + " moveu para " + Character.toLowerCase(xAxis[col]) + (8 - row));
              return true;
          }
@@ -92,7 +92,7 @@ public class ChessGameManager implements Constants{
             createGame();
 
         ChessGame.importGame(filename);
-        pcs.firePropertyChange("newGame", null, null);
+        pcs.firePropertyChange(PROP.newGame, null, null);
         ModelLog.getInstance().addLog("Jogo importado");
     }
 
@@ -108,8 +108,9 @@ public class ChessGameManager implements Constants{
         boolean gameExists = gameExists();
         ChessGame = deserialize(filename);
 
-        if (gameExists) pcs.firePropertyChange("initGame", null, null);
-        else pcs.firePropertyChange("newGame", null, null);
+        if (!gameExists)    pcs.firePropertyChange(PROP.initGame, null, null);
+        else                pcs.firePropertyChange(PROP.newGame, null, null);
+
         ModelLog.getInstance().addLog("Jogo aberto");
     }
 

@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import pt.isec.pa.chess.model.ChessGameManager;
+import pt.isec.pa.chess.model.PROP;
 import pt.isec.pa.chess.model.data.pieces.Team;
 import pt.isec.pa.chess.ui.res.ImageManager;
 
@@ -34,9 +35,9 @@ public class ChessBoard extends Canvas {
         pcs = new PropertyChangeSupport(this);
 
 
-        gameManager.addPropertyChangeListener("newGame", event -> update());
-        gameManager.addPropertyChangeListener("newRound", event -> update());
-        gameManager.addPropertyChangeListener("select", event -> markSelected(this.getGraphicsContext2D()));
+        gameManager.addPropertyChangeListener(PROP.newGame,event -> update());
+        gameManager.addPropertyChangeListener(PROP.newRound, event -> update());
+        gameManager.addPropertyChangeListener(PROP.select, event -> markSelected());
 
         if (this.gameManager.gameExists())
             handleSizeChange();
@@ -64,11 +65,15 @@ public class ChessBoard extends Canvas {
                 int row = (int) (y / size);
                 int column = (int) (x / size);
 
-                if (gameManager.GMgetSelectedPiece() == null) {
-                    gameManager.GMselectPiece(row, column);
-                } else {
-                    gameManager.GMmakeAMove(row, column);
+
+                if (gameManager.GMgetSelectedPiece() != null) {
+                    if (gameManager.GMmakeAMove(row, column)) {
+                        return;
+                    }
                 }
+
+                gameManager.GMselectPiece(row, column);
+
             });
 
         }
@@ -82,14 +87,14 @@ public class ChessBoard extends Canvas {
         gc.clearRect(0, 0, this.getWidth(), this.getHeight());
         gc.setGlobalAlpha(1);
 
-        drawBoard(gc);
-        drawPieces(gc);
+        drawBoard();
+        drawPieces();
 
         if (gameManager.GMgetSelectedPiece() != null)
-            markSelected(gc);
+            markSelected();
 
         if (gameManager.GMisOver())
-            endGame(gc);
+            endGame();
 
     }
 
@@ -100,13 +105,8 @@ public class ChessBoard extends Canvas {
 
 
 
-
-
-
-
-
-
-    public void drawBoard(GraphicsContext gc) {
+    public void drawBoard() {
+        GraphicsContext gc = this.getGraphicsContext2D();
         for (int i = 0; i < gameManager.getBoardSize(); i++) {              // Cria Tabuleiro
             for (int j = 0; j < gameManager.getBoardSize(); j++) {
                 if ((i + j) % 2 == 0)
@@ -119,7 +119,8 @@ public class ChessBoard extends Canvas {
         }
     }
 
-    public void drawPieces(GraphicsContext gc) {
+    public void drawPieces() {
+        GraphicsContext gc = this.getGraphicsContext2D();
         StringBuilder type = new StringBuilder();                        // Poe pecas no tabuleiro
         Integer[] rc;
         for(String p : gameManager.GMgetPieces()) {
@@ -145,24 +146,28 @@ public class ChessBoard extends Canvas {
         }
     }
 
-    public void markSelected(GraphicsContext gc) {
+    public void markSelected() {
+        GraphicsContext gc = this.getGraphicsContext2D();
         if (!marked) {
             Integer[] pieceCoords = gameManager.GMgetPieceCoords(gameManager.GMgetSelectedPiece());
             gc.setFill(Color.GREEN);
             gc.setGlobalAlpha(0.2);
             gc.fillRect(size * pieceCoords[1], size * pieceCoords[0], size, size);
             selectedPiece=gameManager.GMgetSelectedPiece();
-            /*
+
             gc.setFill(Color.RED);
             for (Integer[] pos : gameManager.GMgetPiecePossibilities())
                 gc.fillOval(size * pos[1], size * pos[0], size, size);
-            */
+
             marked = true;
+        } else {
+            marked = false;
+            update();
         }
 
     }
 
-    public void endGame(GraphicsContext gc) {
+    public void endGame() {
         if (!isOver) {
             isOver = true;
             Stage janela = new Stage();

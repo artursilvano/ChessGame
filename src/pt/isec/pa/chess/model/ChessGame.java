@@ -79,7 +79,7 @@ public class ChessGame implements Constants, Serializable {
 
 
     public boolean selectPiece(int row, int col) {                                    // Seleciona peca
-        if (this.selectedPiece != null) return false;                                 // Se selecionou uma peca, nao pode selecionar outra
+        //if (this.selectedPiece != null) return false;                                 // Se selecionou uma peca, nao pode selecionar outra
 
         this.selectedPiece = this.board.getPiece(row, col);
         if (this.selectedPiece != null && this.selectedPiece.getTeam().equals(this.roundTeam) && !this.selectedPiece.getPossibilities().isEmpty()) {

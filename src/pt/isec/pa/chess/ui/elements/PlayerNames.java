@@ -3,6 +3,7 @@ package pt.isec.pa.chess.ui.elements;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import pt.isec.pa.chess.model.ChessGameManager;
+import pt.isec.pa.chess.model.PROP;
 import pt.isec.pa.chess.model.data.pieces.Team;
 
 public class PlayerNames extends VBox {
@@ -22,8 +23,8 @@ public class PlayerNames extends VBox {
 
         createViews();
 
-        gameManager.addPropertyChangeListener("setName", event -> createViews());
-        gameManager.addPropertyChangeListener("newRound", evt -> {
+        gameManager.addPropertyChangeListener(PROP.setName,event -> createViews());
+        gameManager.addPropertyChangeListener(PROP.newRound, evt -> {
             String current = (gameManager.GMgetTeam() == Team.WHITE
                     ? gameManager.getWhitePlayer()
                     : gameManager.getBlackPlayer());
