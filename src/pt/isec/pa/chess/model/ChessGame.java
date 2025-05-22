@@ -26,6 +26,7 @@ public class ChessGame implements Constants, Serializable {
     private String pWhite;
     private String pBlack;
 
+    private int lastDeathCount;
     public Piece selectedPiece = null;
 
     private Team winner = null;
@@ -79,15 +80,16 @@ public class ChessGame implements Constants, Serializable {
 
 
     public boolean selectPiece(int row, int col) {                                    // Seleciona peca
+        Piece sP = this.board.getPiece(row, col);
+        if (sP == null) return false;
         //if (this.selectedPiece != null) return false;                                 // Se selecionou uma peca, nao pode selecionar outra
-        if (board.getPiece(row, col) == null) return false;
 
-        this.selectedPiece = this.board.getPiece(row, col);
-        if (this.selectedPiece != null && this.selectedPiece.getTeam().equals(this.roundTeam) && !this.selectedPiece.getPossibilities().isEmpty()) {
+
+        if (sP.getTeam().equals(this.roundTeam) && !sP.getPossibilities().isEmpty()) {
+            this.selectedPiece = sP;
             return true;
         }
 
-        this.selectedPiece = null;
         return false;
     }
 
@@ -193,6 +195,31 @@ public class ChessGame implements Constants, Serializable {
         return true;
     }
 
+    public Board getBoard() { return this.board; }
 
+    public void retreatTurn(){
+        round--;
+    }
+
+    public void setTeam(){
+        if (this.roundTeam == WHITE)
+            roundTeam = BLACK;
+        else
+            roundTeam = WHITE;
+    }
+
+    public Boolean isCheck() {
+        for (int l = 0; l < TAM; l++)
+            for (int c = 0; c < TAM; c++)
+                if (this.board.getPiece(l, c)!=null && !this.board.getPiece(l, c).myKingIsSafe(this.board)){return true;}
+        return false;
+    }
+
+    public boolean Killed(){
+        int currentDeaths = this.board.getDeathPieces().size();
+        boolean captured = currentDeaths > lastDeathCount;
+        lastDeathCount = currentDeaths;
+        return captured;
+    }
 
 }

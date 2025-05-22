@@ -12,7 +12,6 @@ import pt.isec.pa.chess.ui.elements.RootPane;
 
 public class ChessUI extends Application {
 
-
     private final ChessGameManager gameManager;
 
 

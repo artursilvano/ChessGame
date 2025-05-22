@@ -1,13 +1,14 @@
 package pt.isec.pa.chess.ui.elements;
 
 
+
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import pt.isec.pa.chess.model.ChessGameManager;
 
-import java.awt.event.WindowEvent;
+
 
 import static java.lang.Math.min;
 
@@ -17,8 +18,8 @@ public class RootPane extends BorderPane {
     private final ChessGameManager gameManager;
     private PlayerNames playerNames;
     private FullBoard fullBoard;
-
     private double minSize;
+    private SoundCheckBox soundCheckBox;
 
 
     public RootPane(ChessGameManager gameManager) {
@@ -29,6 +30,8 @@ public class RootPane extends BorderPane {
 
         createViews();
 
+        gameManager.addPropertyChangeListener("newGame", evt -> updateInit());
+
         gameManager.addPropertyChangeListener("initGame", evt -> updateInit());
 
         this.widthProperty().addListener((obs, oldVal, newVal) -> {
@@ -37,6 +40,7 @@ public class RootPane extends BorderPane {
         this.heightProperty().addListener((obs, oldVal, newVal) -> {
             update();
         } );
+
     }
 
     private void createViews(){
@@ -57,8 +61,12 @@ public class RootPane extends BorderPane {
     public void updateInit() {
         this.playerNames = new PlayerNames(gameManager);
         fullBoard = new FullBoard(this.gameManager, this);
+        soundCheckBox = new SoundCheckBox();
+
         setBottom(playerNames);
         setCenter(fullBoard);
+        setRight(soundCheckBox);
+
     }
 
     public ChessGameManager newGame() {

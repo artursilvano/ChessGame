@@ -10,11 +10,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import pt.isec.pa.chess.model.ChessGameManager;
-import pt.isec.pa.chess.model.PROP;
+import pt.isec.pa.chess.model.command.PROP;
 import pt.isec.pa.chess.model.data.pieces.Team;
 import pt.isec.pa.chess.ui.res.ImageManager;
+import pt.isec.pa.chess.ui.res.SoundManager;
 
 import java.beans.PropertyChangeSupport;
+
+import static pt.isec.pa.chess.model.Constants.TAM;
+import static pt.isec.pa.chess.model.Constants.xAxis;
 
 public class ChessBoard extends Canvas {
 
@@ -67,10 +71,50 @@ public class ChessBoard extends Canvas {
 
 
                 if (gameManager.GMgetSelectedPiece() != null) {
+                    String selectedPiece = gameManager.GMgetSelectedPiece();
+
                     if (gameManager.GMmakeAMove(row, column)) {
+                        //sounds
+                        if(SoundCheckBox.isChecked()){
+                        if(Character.isUpperCase(selectedPiece.charAt(0))){SoundManager.play("white.mp3");}
+                        else{SoundManager.play("black.mp3");}//Black or White
+
+                        StringBuilder type = new StringBuilder();
+
+                        switch(Character.toUpperCase(selectedPiece.charAt(0))) {
+                            case 'P': type.append("pawn"); break;
+                            case 'N': type.append("knight"); break;
+                            case 'B': type.append("bishop"); break;
+                            case 'R': type.append("rook"); break;
+                            case 'Q': type.append("queen"); break;
+                            case 'K': type.append("king"); break;
+                        }
+
+                        type.append(".mp3");
+                        SoundManager.play(type.toString());//Piece Type
+
+                        SoundManager.play((Character.toLowerCase(selectedPiece.charAt(1))) + ".mp3");
+                        SoundManager.play((Character.toLowerCase(selectedPiece.charAt(2))) + ".mp3");//Inicial position
+
+                        SoundManager.play(xAxis[column] + ".mp3");
+                        SoundManager.play(TAM-row + ".mp3");//Final position
+
+                        if(gameManager.isChecked()){SoundManager.play("check.mp3");}
+
+                        if(gameManager.GMkilled()){
+                            SoundManager.play("captured.mp3");
+                        }
+
+
+                        }
+
+
                         return;
                     }
+
                 }
+
+
 
                 gameManager.GMselectPiece(row, column);
 
@@ -148,16 +192,18 @@ public class ChessBoard extends Canvas {
 
     public void markSelected() {
         GraphicsContext gc = this.getGraphicsContext2D();
-        if (!marked) {
+        if (!marked && gameManager.GMgetSelectedPiece() != null) {
             Integer[] pieceCoords = gameManager.GMgetPieceCoords(gameManager.GMgetSelectedPiece());
             gc.setFill(Color.GREEN);
             gc.setGlobalAlpha(0.2);
             gc.fillRect(size * pieceCoords[1], size * pieceCoords[0], size, size);
             selectedPiece=gameManager.GMgetSelectedPiece();
 
-            gc.setFill(Color.RED);
-            for (Integer[] pos : gameManager.GMgetPiecePossibilities())
-                gc.fillOval(size * pos[1], size * pos[0], size, size);
+            if (gameManager.getShowPossibleMoves()) {
+                gc.setFill(Color.RED);
+                for (Integer[] pos : gameManager.GMgetPiecePossibilities())
+                    gc.fillOval(size * pos[1], size * pos[0], size, size);
+            }
 
             marked = true;
         } else {
@@ -170,6 +216,8 @@ public class ChessBoard extends Canvas {
     public void endGame() {
         if (!isOver) {
             isOver = true;
+
+
             Stage janela = new Stage();
             Button btnOk = new Button("OK");
             janela.setTitle("FIM DE JOGO");
@@ -187,7 +235,11 @@ public class ChessBoard extends Canvas {
             Scene scene = new Scene(layout, 250, 150);
             janela.setScene(scene);
             janela.showAndWait();
+
+
+
         }
     }
 
 }
+

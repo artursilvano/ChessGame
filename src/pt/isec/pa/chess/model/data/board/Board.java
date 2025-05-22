@@ -5,7 +5,9 @@ import pt.isec.pa.chess.model.data.pieces.*;
 import java.io.FileNotFoundException;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.AbstractList;
+import java.util.ArrayList;
+
 
 import static pt.isec.pa.chess.model.data.pieces.PieceType.*;
 import static pt.isec.pa.chess.model.data.pieces.Team.*;
@@ -14,6 +16,7 @@ public class Board implements Constants, Serializable {
     @Serial private static final long serialVersionUID = 1L;
 
     Piece[][] board;
+    private ArrayList<Piece> DeathPieces= new ArrayList<>();
 
     public Board() {                        // Cria tabuleiro inicial
         board = new Piece[TAM][TAM];
@@ -107,7 +110,10 @@ public class Board implements Constants, Serializable {
 
     public void removePiece(int l, int c) {
         board[l][c] = null;
-        //...
+    }
+
+    public void addPieceDeathPieces(int l, int c) {
+        DeathPieces.add(getPiece(l, c));
     }
 
     public void addPiece(Piece piece, int l, int c) {
@@ -124,6 +130,7 @@ public class Board implements Constants, Serializable {
 
     public Piece getEnPassant(int row, int col) { return board[row][col] != null && board[row][col].getType().equals(ENPASSANT) ? board[row][col] : null; }
 
+    public ArrayList<Piece> getDeathPieces(){ return DeathPieces; }
 
 
 
@@ -177,4 +184,3 @@ public class Board implements Constants, Serializable {
 
 
 }
-

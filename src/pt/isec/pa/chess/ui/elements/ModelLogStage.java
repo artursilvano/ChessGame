@@ -42,6 +42,7 @@ public class ModelLogStage extends Stage {
 
         });
         ModelLog.getInstance().addPropertyChangeListener(_ -> update());
+
     }
 
     private void update() {

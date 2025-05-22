@@ -20,6 +20,7 @@ public abstract class Piece implements Constants, Serializable {
     private final PieceType type;
     private boolean first;
     private final Team team;
+    private ArrayList<Piece> DeathPieces= new ArrayList<>();
 
     Piece(Board b,PieceType t, int r, int c,Team team) {
         this.board = b;
@@ -69,6 +70,8 @@ public abstract class Piece implements Constants, Serializable {
     }
 
     public void isNotFirst() { this.first = false; }
+
+    public void setFirst(boolean originalFirstMove) { this.first = originalFirstMove; }
 
     public void setRow(int r) { this.row = r; }
 
@@ -124,8 +127,11 @@ public abstract class Piece implements Constants, Serializable {
 
     public boolean execMove(int l, int c) {                 // Se conseguir chegar na casa...
         if (this.board.getPiece(l, c) == null || !this.board.getPiece(l, c).getTeam().equals(this.team)) {   // Se nao tiver uma peca de mesma cor ou estiver vazio...
-            if (this.board.getPiece(l, c) != null && !this.board.getPiece(l, c).getTeam().equals(this.team))
-                this.board.removePiece(l, c);                                  // Se tiver uma peca de outra cor, mata! e se move
+            if (this.board.getPiece(l, c) != null && !this.board.getPiece(l, c).getTeam().equals(this.team)){
+                this.board.removePiece(l, c);
+                this.board.addPieceDeathPieces(l, c);
+            }
+                                                  // Se tiver uma peca de outra cor, mata! e se move
             this.board.movePiece(this, l, c);                           // Se estiver vazio, apenas se move
             this.row = l;
             this.column = c;

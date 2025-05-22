@@ -1,6 +1,13 @@
 package pt.isec.pa.chess.model;
 
+import pt.isec.pa.chess.model.command.CommandManager;
+import pt.isec.pa.chess.model.command.ICommand;
+import pt.isec.pa.chess.model.command.MovePieceCommand;
+import pt.isec.pa.chess.model.data.board.Board;
+import pt.isec.pa.chess.model.data.pieces.Piece;
 import pt.isec.pa.chess.model.data.pieces.Team;
+import pt.isec.pa.chess.model.command.PROP;
+import pt.isec.pa.chess.ui.res.SoundManager;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -17,6 +24,9 @@ public class ChessGameManager implements Constants{
     private ChessGame ChessGame;
 
     private final PropertyChangeSupport pcs;
+    private final CommandManager cmdMgr = new CommandManager();
+
+    private Boolean showPossibleMoves = false;
 
     public ChessGameManager() {
         ChessGame = null;
@@ -56,6 +66,13 @@ public class ChessGameManager implements Constants{
     public Integer[] GMgetPieceCoords(String pieceId) { return ChessGame.getPieceCoords(pieceId); }
     public ArrayList<String> GMgetPieces() { return ChessGame.getPieces(); }
 
+    public boolean changeShowPossibleMoves(boolean show) {
+        showPossibleMoves = show;
+        pcs.firePropertyChange(PROP.showMoves,null,null);
+        pcs.firePropertyChange(PROP.select,null,null);
+        return showPossibleMoves;
+    }
+    public boolean getShowPossibleMoves() { return showPossibleMoves; }
 
     public List<Integer[]> GMgetPiecePossibilities() { return ChessGame.getPiecePossibilities(); }
     public boolean GMselectPiece(int row, int col) {
@@ -65,15 +82,45 @@ public class ChessGameManager implements Constants{
         }
         return false;
     }
+
+    /*
     public boolean GMmakeAMove(int row, int col) {
         String piece = GMgetSelectedPiece();
-         if (ChessGame.makeAMove(row, col)) {
-             pcs.firePropertyChange(PROP.newRound,null,null);
-             ModelLog.getInstance().addLog(piece + " moveu para " + Character.toLowerCase(xAxis[col]) + (8 - row));
-             return true;
-         }
+        if (ChessGame.makeAMove(row, col)) {
+            pcs.firePropertyChange(PROP.newRound,null,null);
+            ModelLog.getInstance().addLog(piece + " moveu para " + Character.toLowerCase(xAxis[col]) + (8 - row));
+            return true;
+        }
         return false;
     }
+     */
+
+    public boolean GMmakeAMove(int row,int col){
+        String piece = GMgetSelectedPiece();
+        if (piece == null)
+            return false;
+
+        Integer [] orig = GMgetPieceCoords(piece);
+        if (orig == null)
+            return false;
+
+
+        Piece selected = getBoard().getPiece(orig[0], orig[1]);
+        if (selected == null || selected.getTeam() != GMgetTeam())
+            return false;
+
+        ICommand cmd = new MovePieceCommand(this, orig[0], orig[1], row, col);
+        if (cmdMgr.invokeCommand(cmd)) {
+            pcs.firePropertyChange(PROP.newRound,null,null);
+            ModelLog.getInstance().addLog(piece + " moveu para " + Character.toLowerCase(xAxis[col]) + (8 - row));
+
+            return true;
+        }
+        return false;
+    }
+
+
+
 
     public int GMgetRound() {
         return ChessGame.getRound();
@@ -84,8 +131,11 @@ public class ChessGameManager implements Constants{
 
     public boolean GMisOver() { return ChessGame.isOver(); }
 
+    public boolean isChecked(){return ChessGame.isCheck();}
 
-
+    public boolean GMkilled(){
+        return ChessGame.Killed();
+    }
 
     public void importThis(String filename) throws IOException {
         if (!gameExists())
@@ -126,6 +176,49 @@ public class ChessGameManager implements Constants{
     public void addPropertyChangeListener(String prop, PropertyChangeListener listener) {
         pcs.addPropertyChangeListener(prop, listener);
     }
+
+    public boolean undo() {
+        boolean ok = cmdMgr.undo();
+        if (ok) { pcs.firePropertyChange(PROP.newRound, null, null);}
+        return ok;
+    }
+
+    public boolean redo() {
+        boolean ok = cmdMgr.redo();
+        if (ok) { pcs.firePropertyChange(PROP.newRound, null, null);}
+        return ok;
+    }
+    public boolean hasRedo() {return cmdMgr.hasRedo();}
+    public boolean hasUndo() {return cmdMgr.hasUndo();}
+
+
+    public Board getBoard() {
+        return ChessGame.getBoard();
+    }
+
+    public void nextRound() {
+        ChessGame.nextRound();
+    }
+
+    public void retreatRound() {
+        ChessGame.retreatTurn();
+        ChessGame.setTeam();
+    }
+
+
+    public boolean makeMoveFromCommand(int fromRow, int fromCol, int toRow, int toCol) {
+        Piece selected = ChessGame.getBoard().getPiece(fromRow, fromCol);
+        if (selected == null || selected.getTeam() != GMgetTeam())
+            return false;
+
+        if (selected.move(toRow, toCol)) {
+            ChessGame.selectedPiece = null;
+            return true;
+        }
+
+        return false;
+    }
+
 
 
 }

@@ -3,7 +3,8 @@ package pt.isec.pa.chess.ui.elements;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import pt.isec.pa.chess.model.ChessGameManager;
-import pt.isec.pa.chess.model.PROP;
+import pt.isec.pa.chess.model.command.PROP;
+
 import pt.isec.pa.chess.model.data.pieces.Team;
 
 public class PlayerNames extends VBox {

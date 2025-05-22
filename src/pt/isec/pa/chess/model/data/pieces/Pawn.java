@@ -40,7 +40,7 @@ public class Pawn extends Piece {
         if ( this.board.getEnPassant(l, c) != null && !this.board.getEnPassant(l, c).getTeam().equals(this.getTeam())) {
 
             this.board.removePiece(this.board.getEnPassant(l, c).getRow(), this.board.getEnPassant(l,c).getColumn()); // Mata peao correspondente
-
+            this.board.addPieceDeathPieces(l, c);
             execMove(l,c);
             return true;
         }

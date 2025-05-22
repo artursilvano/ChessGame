@@ -9,7 +9,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import pt.isec.pa.chess.model.ChessGameManager;
 import pt.isec.pa.chess.model.ModelLog;
+import pt.isec.pa.chess.model.command.PROP;
 
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
 
@@ -24,10 +26,14 @@ public class MenuTop extends MenuBar {
     private MenuItem miUndo,miRedo;
     private CheckMenuItem miNormal,miSPM;
 
+    PropertyChangeSupport pcs;
+
     public MenuTop(ChessGameManager gameManager, RootPane root) {
         this.gameManager = gameManager;
         this.root = root;
-
+        pcs = new PropertyChangeSupport(this);
+        gameManager.addPropertyChangeListener(PROP.newRound, evt -> update());
+        gameManager.addPropertyChangeListener(PROP.showMoves, evt -> updateSPM());
 
         createViews();
         registerHandlers();
@@ -106,6 +112,8 @@ public class MenuTop extends MenuBar {
             Scene scene = new Scene(layout, 250, 150);
             janela.setScene(scene);
             janela.showAndWait();
+            ModelLog.getInstance().addLog("Cria um novo Jogo");
+            update();
         });
 
 
@@ -135,6 +143,7 @@ public class MenuTop extends MenuBar {
                     alert.showAndWait();
                 }
             }
+            update();
         });
 
 
@@ -167,6 +176,7 @@ public class MenuTop extends MenuBar {
                         Alert alert = new Alert(Alert.AlertType.ERROR, "Jogo não Criado\n");
                         alert.showAndWait();
             }
+            update();
         });
 
 
@@ -225,6 +235,7 @@ public class MenuTop extends MenuBar {
                     alert.showAndWait();
                 }
             }
+            update();
         });
 
 
@@ -256,6 +267,7 @@ public class MenuTop extends MenuBar {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Jogo não Criado\n");
                 alert.showAndWait();
             }
+            update();
         });
 
 
@@ -269,14 +281,42 @@ public class MenuTop extends MenuBar {
 
         miSPM.setOnAction(event -> {
             miNormal.setDisable(miSPM.isSelected());
+            if (miSPM.isSelected()) {
+                gameManager.changeShowPossibleMoves(true);
+            } else {
+                gameManager.changeShowPossibleMoves(false);
+            }
+        });
+
+        miUndo.setOnAction(event -> {
+            if(gameManager.undo()){
+                root.update();
+                update();
+                ModelLog.getInstance().addLog("Desfazer jogada");
+            }
+        });
+
+        miRedo.setOnAction(event -> {
+            if (gameManager.redo()) {
+                root.update();
+                update();
+                ModelLog.getInstance().addLog("Refazer jogada");
+            }
         });
 
 
 
     }
     private void update() {
-        miUndo.setDisable(true);
-        miRedo.setDisable(true);
+        miUndo.setDisable(!gameManager.hasUndo());
+        miRedo.setDisable(!gameManager.hasRedo());
+    }
 
+    private void updateSPM() {
+        if (gameManager.getShowPossibleMoves()) {
+            miSPM.setSelected(true);
+        } else {
+            miSPM.setSelected(false);
+        }
     }
 }
