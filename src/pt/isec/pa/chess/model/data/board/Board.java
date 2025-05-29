@@ -90,7 +90,8 @@ public class Board implements Constants, Serializable {
             piece = type.createPiece(this,  (TAM - Character.getNumericValue(id.charAt(2))), columnToNum(Character.toUpperCase(id.charAt(1))), Character.isUpperCase(id.charAt(0)) ? WHITE : BLACK);   // Cria peca
             if (id.length() == 3) {
                 assert piece != null;
-                piece.isNotFirst();
+                if (type != PAWN)
+                    piece.isNotFirst();
             }
         }
         return piece;
