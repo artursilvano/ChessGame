@@ -109,6 +109,7 @@ public abstract class Piece implements Constants, Serializable {
             yKing = this.column;
         } else {
             int[] kPos = this.myKingPosition();
+            if (kPos == null) return true;
             xKing = kPos[0];
             yKing = kPos[1];
         }

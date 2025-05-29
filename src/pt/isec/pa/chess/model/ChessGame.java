@@ -27,7 +27,11 @@ public class ChessGame implements Constants, Serializable {
     private String pBlack;
 
     private int lastDeathCount;
-    public Piece selectedPiece = null;
+    private Piece selectedPiece = null;
+
+    private boolean promotion = false;
+    private Piece pieceToPromote = null;
+
 
     private Team winner = null;
 
@@ -93,6 +97,10 @@ public class ChessGame implements Constants, Serializable {
         return false;
     }
 
+    public void unselectPiece() {
+        this.selectedPiece = null;
+    }
+
     public Integer[] getPieceCoords(String pieceId) {
         Integer[] coords = new Integer[2];
         if (board.getPiece(pieceId) != null) {
@@ -106,11 +114,41 @@ public class ChessGame implements Constants, Serializable {
     public boolean makeAMove(int row, int col) {
         if (this.selectedPiece == null) return false;
         if (this.selectedPiece.move(row, col)) {
+            if (this.selectedPiece.getType().equals(PAWN) && (row == 0 || row == 7)) {
+                this.promotion = true;
+                this.pieceToPromote = selectedPiece;
+
+                System.out.println("to Promote: " + pieceToPromote.getId());
+            } else
+                this.promotion = false;
             this.selectedPiece = null;
             this.nextRound();
             return true;
         }
         return false;
+    }
+
+    public void setPromotion(boolean promotion) { this.promotion = promotion; }
+
+    public boolean isPromotion() { return this.promotion; }
+
+    public void setPieceToPromote(Piece p) { this.pieceToPromote = p; }
+
+    public String getPieceToPromote() {
+        if (this.pieceToPromote == null) return null;
+        else return this.pieceToPromote.getId();
+    }
+
+    public boolean promote(PieceType type) {
+        if (pieceToPromote == null) return false;
+
+        Piece promoted = type.createPiece(this.getBoard(), pieceToPromote.getRow(), pieceToPromote.getColumn(), pieceToPromote.getTeam());
+        this.getBoard().movePiece(promoted, promoted.getRow(), promoted.getColumn());
+
+        this.pieceToPromote = null;
+        this.promotion = false;
+
+        return true;
     }
 
     public int getRound() { return this.round; }

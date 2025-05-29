@@ -1,10 +1,12 @@
 package pt.isec.pa.chess.model;
 
+
 import pt.isec.pa.chess.model.command.CommandManager;
 import pt.isec.pa.chess.model.command.ICommand;
 import pt.isec.pa.chess.model.command.MovePieceCommand;
 import pt.isec.pa.chess.model.data.board.Board;
 import pt.isec.pa.chess.model.data.pieces.Piece;
+import pt.isec.pa.chess.model.data.pieces.PieceType;
 import pt.isec.pa.chess.model.data.pieces.Team;
 import pt.isec.pa.chess.model.command.PROP;
 import pt.isec.pa.chess.ui.res.SoundManager;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static pt.isec.pa.chess.model.ChessGameSerialization.*;
+import static pt.isec.pa.chess.model.data.pieces.PieceType.PAWN;
 
 public class ChessGameManager implements Constants{
 
@@ -95,22 +98,26 @@ public class ChessGameManager implements Constants{
     }
      */
 
-    public boolean GMmakeAMove(int row,int col){
+    public boolean GMmakeAMove(int row, int col){
         String piece = GMgetSelectedPiece();
-        if (piece == null)
-            return false;
+        if (piece == null) return false;
 
         Integer [] orig = GMgetPieceCoords(piece);
-        if (orig == null)
-            return false;
-
+        if (orig == null) return false;
 
         Piece selected = getBoard().getPiece(orig[0], orig[1]);
-        if (selected == null || selected.getTeam() != GMgetTeam())
-            return false;
+        if (selected == null || selected.getTeam() != GMgetTeam()) return false;
+
 
         ICommand cmd = new MovePieceCommand(this, orig[0], orig[1], row, col);
         if (cmdMgr.invokeCommand(cmd)) {
+            if (selected.getType().equals(PAWN) && (row == 0 || row == 7)) {
+                ChessGame.setPromotion(true);
+                ChessGame.setPieceToPromote(selected);
+                pcs.firePropertyChange(PROP.promWindow, null, null);
+            } else {
+                ChessGame.setPromotion(false);
+            }
             pcs.firePropertyChange(PROP.newRound,null,null);
             ModelLog.getInstance().addLog(piece + " moveu para " + Character.toLowerCase(xAxis[col]) + (8 - row));
 
@@ -119,8 +126,17 @@ public class ChessGameManager implements Constants{
         return false;
     }
 
+    public boolean GMisPromotion() { return ChessGame.isPromotion(); }
 
-
+    public void GMpromote(PieceType type) {
+        if (GMisPromotion()) {
+            String pid = ChessGame.getPieceToPromote();
+            if (ChessGame.promote(type)) {
+                ModelLog.getInstance().addLog(pid + " foi promovido para " + type.toString().toLowerCase());
+                pcs.firePropertyChange(PROP.newRound,null,null);
+            }
+        }
+    }
 
     public int GMgetRound() {
         return ChessGame.getRound();
@@ -212,12 +228,18 @@ public class ChessGameManager implements Constants{
             return false;
 
         if (selected.move(toRow, toCol)) {
-            ChessGame.selectedPiece = null;
+            ChessGame.unselectPiece();
             return true;
         }
 
         return false;
     }
+
+
+
+
+
+
 
 
 

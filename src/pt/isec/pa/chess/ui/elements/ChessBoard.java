@@ -1,16 +1,21 @@
 package pt.isec.pa.chess.ui.elements;
 
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import pt.isec.pa.chess.model.ChessGameManager;
 import pt.isec.pa.chess.model.command.PROP;
+import pt.isec.pa.chess.model.data.pieces.PieceType;
 import pt.isec.pa.chess.model.data.pieces.Team;
 import pt.isec.pa.chess.ui.res.ImageManager;
 import pt.isec.pa.chess.ui.res.SoundManager;
@@ -42,6 +47,7 @@ public class ChessBoard extends Canvas {
         gameManager.addPropertyChangeListener(PROP.newGame,event -> update());
         gameManager.addPropertyChangeListener(PROP.newRound, event -> update());
         gameManager.addPropertyChangeListener(PROP.select, event -> markSelected());
+        gameManager.addPropertyChangeListener(PROP.promWindow, event -> openPromotion());
 
         if (this.gameManager.gameExists())
             handleSizeChange();
@@ -56,72 +62,89 @@ public class ChessBoard extends Canvas {
         size = wd / gameManager.getBoardSize();    // Especifica tamanho das casas
 
         update();
-        registerHandlers();
     }
 
 
     public void registerHandlers() {
         if(gameManager.gameExists()){
             this.setOnMouseClicked(event -> {
+                if (!gameManager.GMisPromotion()) {
 
-                double x = event.getX();
-                double y = event.getY();
-                int row = (int) (y / size);
-                int column = (int) (x / size);
+                    double x = event.getX();
+                    double y = event.getY();
+                    int row = (int) (y / size);
+                    int column = (int) (x / size);
 
 
-                if (gameManager.GMgetSelectedPiece() != null) {
-                    String selectedPiece = gameManager.GMgetSelectedPiece();
+                    if (gameManager.GMgetSelectedPiece() != null) {
+                        String selectedPiece = gameManager.GMgetSelectedPiece();
 
-                    if (gameManager.GMmakeAMove(row, column)) {
-                        //sounds
-                        if(SoundCheckBox.isChecked()){
-                        if(Character.isUpperCase(selectedPiece.charAt(0))){SoundManager.play("white.mp3");}
-                        else{SoundManager.play("black.mp3");}//Black or White
+                        if (gameManager.GMmakeAMove(row, column)) {
+                            //sounds
+                            if (SoundCheckBox.isChecked()) {
+                                if (Character.isUpperCase(selectedPiece.charAt(0))) {
+                                    SoundManager.play("white.mp3");
+                                } else {
+                                    SoundManager.play("black.mp3");
+                                }//Black or White
 
-                        StringBuilder type = new StringBuilder();
+                                StringBuilder type = new StringBuilder();
 
-                        switch(Character.toUpperCase(selectedPiece.charAt(0))) {
-                            case 'P': type.append("pawn"); break;
-                            case 'N': type.append("knight"); break;
-                            case 'B': type.append("bishop"); break;
-                            case 'R': type.append("rook"); break;
-                            case 'Q': type.append("queen"); break;
-                            case 'K': type.append("king"); break;
+                                switch (Character.toUpperCase(selectedPiece.charAt(0))) {
+                                    case 'P':
+                                        type.append("pawn");
+                                        break;
+                                    case 'N':
+                                        type.append("knight");
+                                        break;
+                                    case 'B':
+                                        type.append("bishop");
+                                        break;
+                                    case 'R':
+                                        type.append("rook");
+                                        break;
+                                    case 'Q':
+                                        type.append("queen");
+                                        break;
+                                    case 'K':
+                                        type.append("king");
+                                        break;
+                                }
+
+                                type.append(".mp3");
+                                SoundManager.play(type.toString());//Piece Type
+
+                                SoundManager.play((Character.toLowerCase(selectedPiece.charAt(1))) + ".mp3");
+                                SoundManager.play((Character.toLowerCase(selectedPiece.charAt(2))) + ".mp3");//Inicial position
+
+                                SoundManager.play(xAxis[column] + ".mp3");
+                                SoundManager.play(TAM - row + ".mp3");//Final position
+
+                                if (gameManager.isChecked()) {
+                                    SoundManager.play("check.mp3");
+                                }
+
+                                if (gameManager.GMkilled()) {
+                                    SoundManager.play("captured.mp3");
+                                }
+
+
+                            }
+
+
+                            return;
                         }
 
-                        type.append(".mp3");
-                        SoundManager.play(type.toString());//Piece Type
-
-                        SoundManager.play((Character.toLowerCase(selectedPiece.charAt(1))) + ".mp3");
-                        SoundManager.play((Character.toLowerCase(selectedPiece.charAt(2))) + ".mp3");//Inicial position
-
-                        SoundManager.play(xAxis[column] + ".mp3");
-                        SoundManager.play(TAM-row + ".mp3");//Final position
-
-                        if(gameManager.isChecked()){SoundManager.play("check.mp3");}
-
-                        if(gameManager.GMkilled()){
-                            SoundManager.play("captured.mp3");
-                        }
-
-
-                        }
-
-
-                        return;
                     }
 
+
+                    gameManager.GMselectPiece(row, column);
                 }
-
-
-
-                gameManager.GMselectPiece(row, column);
-
             });
 
         }
     }
+
 
 
     public void update() {
@@ -140,6 +163,10 @@ public class ChessBoard extends Canvas {
         if (gameManager.GMisOver())
             endGame();
 
+
+
+
+        registerHandlers();
     }
 
 
@@ -240,6 +267,79 @@ public class ChessBoard extends Canvas {
 
         }
     }
+
+    public void openPromotion() {
+        if (gameManager.GMisPromotion()) {
+            Stage janela = new Stage();
+            janela.setResizable(false);
+            janela.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent event) {
+                    event.consume();
+                }
+            });
+            janela.setTitle("Promotion");
+
+            Button knight = new Button();
+            Button bishop = new Button();
+            Button rook = new Button();
+            Button queen = new Button();
+
+            knight.setPrefSize(size, size);
+            ImageView view = new ImageView(ImageManager.getImage("pieces/knightW.png"));
+            view.setFitHeight(size);
+            view.setPreserveRatio(true);
+            knight.setGraphic(view);
+
+            bishop.setPrefSize(size, size);
+            view = new ImageView(ImageManager.getImage("pieces/bishopW.png"));
+            view.setFitHeight(size);
+            view.setPreserveRatio(true);
+            bishop.setGraphic(view);
+
+            rook.setPrefSize(size, size);
+            view = new ImageView(ImageManager.getImage("pieces/rookW.png"));
+            view.setFitHeight(size);
+            view.setPreserveRatio(true);
+            rook.setGraphic(view);
+
+            queen.setPrefSize(size, size);
+            view = new ImageView(ImageManager.getImage("pieces/queenW.png"));
+            view.setFitHeight(size);
+            view.setPreserveRatio(true);
+            queen.setGraphic(view);
+
+            knight.setOnAction(event -> {
+                gameManager.GMpromote(PieceType.KNIGHT);
+                janela.close();
+            });
+            bishop.setOnAction(event -> {
+                gameManager.GMpromote(PieceType.BISHOP);
+                janela.close();
+            });
+            rook.setOnAction(event -> {
+                gameManager.GMpromote(PieceType.ROOK);
+                janela.close();
+            });
+            queen.setOnAction(event -> {
+                gameManager.GMpromote(PieceType.QUEEN);
+                janela.close();
+            });
+
+
+            HBox window = new HBox(knight, bishop, rook, queen);
+            window.setStyle("-fx-padding: 10; -fx-alignment: center;");
+
+            Scene scene = new Scene(window, size * 5, size * 1.5);
+            janela.setScene(scene);
+
+            janela.showAndWait();
+        }
+
+
+    }
+
+
 
 }
 

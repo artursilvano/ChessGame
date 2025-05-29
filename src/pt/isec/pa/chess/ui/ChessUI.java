@@ -6,7 +6,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import pt.isec.pa.chess.model.ChessGameManager;
 
-import pt.isec.pa.chess.model.ModelLog;
 import pt.isec.pa.chess.ui.elements.ModelLogStage;
 import pt.isec.pa.chess.ui.elements.RootPane;
 
@@ -26,6 +25,7 @@ public class ChessUI extends Application {
         stage.setMinWidth(600);
 
         stage.show();
+
 
         stage.setTitle("Chess Game 2");
         Stage stage2 = new Stage();
