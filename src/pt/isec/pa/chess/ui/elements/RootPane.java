@@ -41,6 +41,7 @@ public class RootPane extends BorderPane {
             update();
         } );
 
+
     }
 
     private void createViews(){
