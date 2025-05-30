@@ -35,6 +35,8 @@ public class ChessGameManager implements Constants{
 
     private Boolean showPossibleMoves = false;
 
+    private Boolean soundOn = false;
+
     /**
      * Default Constructor
      */
@@ -127,7 +129,7 @@ public class ChessGameManager implements Constants{
     public ArrayList<String> GMgetPieces() { return ChessGame.getPieces(); }
 
     /**
-     * Alterna ativação do botão 'show Possible moves' na UI, e sinaliza possíveis outros Stages
+     * Altera botão 'show Possible moves' na UI, e sinaliza possíveis outros Stages
      * @param show valor para o qual showPossibleMoves será alterado
      * @return showPossibleMoves
      */
@@ -143,6 +145,27 @@ public class ChessGameManager implements Constants{
      * @return showPossibleMoves
      */
     public boolean getShowPossibleMoves() { return showPossibleMoves; }
+
+    /**
+     * Altera checkbox de assistência de som na UI, e sinaliza possíveis outros Stages
+     * @param sound valor para o qual a checkbox será alterada
+     * @return novo valor da checkbox
+     */
+    public boolean changeSoundOn(boolean sound) {
+        soundOn = sound;
+        pcs.firePropertyChange(PROP.soundOn, null, null);
+        return soundOn;
+    }
+
+    /**
+     * Obtém estado da checkbox (selecionado ou não)
+     * @return estado da checkbox
+     */
+    public boolean getSoundOn() { return soundOn; }
+
+
+
+
 
     /**
      * Obtém lista de posições em que a peça selecionada no ChessGame pode fazer

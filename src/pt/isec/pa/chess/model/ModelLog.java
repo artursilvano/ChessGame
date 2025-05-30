@@ -1,5 +1,7 @@
 package pt.isec.pa.chess.model;
 
+import pt.isec.pa.chess.model.command.PROP;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
@@ -39,7 +41,7 @@ public class ModelLog {
      */
     public void addLog(String msg) {
         log.add(msg);
-        pcs.firePropertyChange("logAdded", null, msg);
+        pcs.firePropertyChange(PROP.logAdded, null, msg);
     }
 
     /**
@@ -55,7 +57,7 @@ public class ModelLog {
      */
     public void clearLogs() {
         log.clear();
-        pcs.firePropertyChange("logsCleared", null, null);
+        pcs.firePropertyChange(PROP.logsCleared, null, null);
     }
 
     /**

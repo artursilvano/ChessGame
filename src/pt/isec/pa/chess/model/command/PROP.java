@@ -7,5 +7,8 @@ public interface PROP {
     String newRound = "newRound";
     String select = "select";
     String showMoves = "showMoves";
+    String soundOn = "soundOn";
     String promWindow = "promWindow";
+    String logAdded = "logAdded";
+    String logsCleared = "logsCleared";
 }

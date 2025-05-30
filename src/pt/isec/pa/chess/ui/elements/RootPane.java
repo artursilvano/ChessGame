@@ -7,7 +7,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import pt.isec.pa.chess.model.ChessGameManager;
-
+import pt.isec.pa.chess.model.command.PROP;
 
 
 import static java.lang.Math.min;
@@ -30,9 +30,11 @@ public class RootPane extends BorderPane {
 
         createViews();
 
-        gameManager.addPropertyChangeListener("newGame", evt -> updateInit());
+        gameManager.addPropertyChangeListener(PROP.newGame,evt -> updateInit());
 
-        gameManager.addPropertyChangeListener("initGame", evt -> updateInit());
+        gameManager.addPropertyChangeListener(PROP.initGame, evt -> updateInit());
+
+        gameManager.addPropertyChangeListener(PROP.soundOn, evt -> updateSoundCheckBox());
 
         this.widthProperty().addListener((obs, oldVal, newVal) -> {
             update();
@@ -59,10 +61,18 @@ public class RootPane extends BorderPane {
         }
     }
 
+    public void updateSoundCheckBox() {
+        soundCheckBox.setSelected(gameManager.getSoundOn());
+    }
+
     public void updateInit() {
-        this.playerNames = new PlayerNames(gameManager);
+        this.playerNames = new PlayerNames(this.gameManager);
         fullBoard = new FullBoard(this.gameManager, this);
         soundCheckBox = new SoundCheckBox();
+
+        soundCheckBox.setOnAction( event -> {
+            gameManager.changeSoundOn(soundCheckBox.isSelected());
+        });
 
         setBottom(playerNames);
         setCenter(fullBoard);
