@@ -16,10 +16,11 @@ public class Board implements Constants, Serializable {
     @Serial private static final long serialVersionUID = 1L;
 
     Piece[][] board;
-    private ArrayList<Piece> DeathPieces= new ArrayList<>();
+    private ArrayList<Piece> DeathPieces;
 
     public Board() {                        // Cria tabuleiro inicial
         board = new Piece[TAM][TAM];
+        DeathPieces = new ArrayList<Piece>();
         for (int c = 0; c < TAM; c++) {
             if (c == 0 || c == TAM - 1) {
                 board[0][c] =       ROOK.createPiece(this, 0, c, BLACK);
@@ -48,6 +49,7 @@ public class Board implements Constants, Serializable {
 
     public Board(Board bAux) {
         board = new Piece[TAM][TAM];
+        DeathPieces = new ArrayList<Piece>();
         Piece piece;
         for (int r = 0; r < TAM; r++) {
             for (int c = 0; c < TAM; c++) {
@@ -62,6 +64,7 @@ public class Board implements Constants, Serializable {
 
     public Board(String[] pieces) throws FileNotFoundException {      // Cria board a partir de uma string
         this.board = new Piece[TAM][TAM];
+        DeathPieces = new ArrayList<Piece>();
         Piece piece;
 
         for (String p : pieces) {

@@ -393,6 +393,7 @@ public class ChessGame implements Constants, Serializable {
      * @return true se uma nova peça foi capturada
      */
     public boolean Killed(){
+        if (this.board.getDeathPieces() == null) return false;
         int currentDeaths = this.board.getDeathPieces().size();
         boolean captured = currentDeaths > lastDeathCount;
         lastDeathCount = currentDeaths;

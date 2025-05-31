@@ -1,11 +1,17 @@
 package pt.isec.pa.chess.ui.elements;
 
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import pt.isec.pa.chess.model.ChessGameManager;
 import pt.isec.pa.chess.model.command.PROP;
 
 import pt.isec.pa.chess.model.data.pieces.Team;
+
 
 public class PlayerNames extends VBox {
     private Label lblPlayer1;
@@ -20,6 +26,8 @@ public class PlayerNames extends VBox {
         lblCurrentPlayer = new Label();
 
         this.setSpacing(10);
+        this.setBackground(new Background(new BackgroundFill(Paint.valueOf("#baa072"), null, null)));
+
         this.getChildren().addAll(lblPlayer1, lblPlayer2, lblCurrentPlayer);
 
         createViews();
