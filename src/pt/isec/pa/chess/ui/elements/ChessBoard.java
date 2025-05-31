@@ -250,7 +250,9 @@ public class ChessBoard extends Canvas {
             janela.setTitle("FIM DE JOGO");
             janela.setResizable(false);
 
-            Label lbl = new Label((gameManager.GMgetTeam().equals(Team.WHITE) ? gameManager.getBlackPlayer() : gameManager.getWhitePlayer()) + " Venceu o jogo!");
+            Label lbl = new Label((gameManager.GMgetWinner() == null ? "Empate" :
+                    ((gameManager.GMgetWinner() == Team.WHITE ? gameManager.getWhitePlayer() : gameManager.getBlackPlayer()) +
+                        " (" + gameManager.GMgetWinner().toString() + ") ganhou o jogo")));
 
             btnOk.setOnAction(_ -> {
                 janela.close();

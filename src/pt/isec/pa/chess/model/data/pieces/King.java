@@ -11,11 +11,11 @@ public class King extends Piece {
 
     public boolean onRange(int l, int c) {
         if (l < 0 || l >= TAM || c < 0 || c >= TAM) return false;
-        if(isRoque(l,c)){return true;}
+        if (isRoque(l,c)) { return true; }
         if (this.board.getPiece(l, c) != null && this.board.getPiece(l, c).getTeam().equals(this.getTeam())) return false;
 
         else if (abs(this.getRow() - l) <= 1 && abs(this.getColumn() - c) <= 1)
-            return posIsSafe(this.board, l, c);
+            return myKingWillBeSafe(l, c);
         return false;
     }
     public boolean isRoque(int x, int y) {         // Castling

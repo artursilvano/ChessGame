@@ -62,6 +62,6 @@ public class ChessGameTest {
                 PieceType.ROOK.createPiece(game.getBoard(), 6, 4, Team.BLACK),
                 6, 4
         );
-        assertTrue(game.isCheck(), "Deve detectar xeque no rei branco");
+        assertTrue(game.isCheck(), "Deve detetar xeque no rei branco");
     }
 }

@@ -79,45 +79,34 @@ public abstract class Piece implements Constants, Serializable {
 
     public void setId(String id) {this.id= id;}
 
-    public int[] myKingPosition() {
-        int[] kPos = new int[2];
-        for(int i = 0; i < TAM; ++i)
-            for(int j = 0; j < TAM; ++j)
-                if (this.board.getPiece(j, i) != null && this.board.getPiece(j, i).getTeam().equals(this.team) && this.board.getPiece(j, i).getType().equals(KING)) {
-                    kPos[0] = j;
-                    kPos[1] = i;
-                    return kPos;
-                }
-        return null;
-    }
+    public boolean posIsSafe(Board b, int x, int y) throws StackOverflowError{
+        try {
+            for (int i = 0; i < TAM; ++i)
+                for (int j = 0; j < TAM; ++j)
+                    if (b.getPiece(j, i) != null && !b.getPiece(j, i).getTeam().equals(this.team))  // Se for uma peca de outra cor
+                        if (b.getPiece(j, i).onRange(x, y))                                         // Verifica se alguma peca inimiga pode se mover para a posicao
+                            return false;                                                           // Se puder, a posicao nao e segura
 
-    public boolean posIsSafe(Board b, int x, int y) {
-        for(int i = 0; i < TAM; ++i)
-            for(int j = 0; j < TAM; ++j)
-                if (b.getPiece(j, i) != null && !b.getPiece(j, i).getTeam().equals(this.team))  // Se for uma peca de outra cor
-                    if (b.getPiece(j, i).onRange(x, y))                                         // Verifica se a peca inimiga pode se mover para a posicao
-                        return false;                                                           // Se puder, a posicao nao e segura
-
-        return true;
+            return true;
+        } catch (StackOverflowError e) {
+            return true;
+        }
     }
 
     public boolean myKingIsSafe(Board b) {
-        int xKing;
-        int yKing;
-        if (this.getType().equals(KING)) {
-            xKing = this.row;
-            yKing = this.column;
-        } else {
-            int[] kPos = this.myKingPosition();
-            if (kPos == null) return true;
-            xKing = kPos[0];
-            yKing = kPos[1];
+
+        for (int i = 0; i < TAM; i++) {
+            for (int j = 0; j < TAM; j++) {
+                if (b.getPiece(j, i) != null && b.getPiece(j, i).getTeam().equals(this.team) && b.getPiece(j, i).getType().equals(KING)) {
+                    return this.posIsSafe(b, j, i);
+                }
+            }
         }
-        return this.posIsSafe(b, xKing, yKing);
+
+        return false;
     }
 
     public boolean myKingWillBeSafe(int r, int c) {
-
         Board auxBoard = new Board(this.board);                                             // Cria board por copia
         auxBoard.movePiece(auxBoard.getPiece(this.getRow(), this.getColumn()), r, c);       // Realiza suposto movimento
         return this.myKingIsSafe(auxBoard);                         // Verifica se movimento colocara seu proprio Rei em risco

@@ -276,6 +276,12 @@ public class ChessGameManager implements Constants{
     public boolean GMisOver() { return ChessGame.isOver(); }
 
     /**
+     * Obtém vencedor do jogo, caso jogo já tenha acabado, se for null foi um empate
+     * @return vencedor do jogo
+     */
+    public Team GMgetWinner() { return ChessGame.getWinnerTeam(); }
+
+    /**
      * Verifica se o rei está em Check
      * @return
      */

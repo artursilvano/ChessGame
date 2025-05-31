@@ -259,17 +259,28 @@ public class ChessGame implements Constants, Serializable {
      * @return true se o jogo acabou, false se o jogo deve continuar
      */
     public Boolean isOver() {
-        for (int l = 0; l < TAM; l++)        // Verifica se alguma das pecas do time que vai jogar tem movimentos possiveis (Se nenhuma peca do time tiver movimentos possiveis, o jogo acaba)
-            for (int c = 0; c < TAM; c++)
+        for (int l = 0; l < TAM; l++) {        // Verifica se alguma das pecas do time que vai jogar tem movimentos possiveis (Se nenhuma peca do time tiver movimentos possiveis, o jogo acaba)
+            for (int c = 0; c < TAM; c++) {
                 if (this.board.getPiece(l, c) != null && this.board.getPiece(l, c).getTeam().equals(this.roundTeam)) {
                     if (!this.board.getPiece(l, c).getPossibilities().isEmpty()) return false;
                 }
+            }
+        }
 
         // Verificar o ganhador ou empate
-        this.winner = this.roundTeam == WHITE ? BLACK : WHITE;
-        return true;
+        if(isCheck())
+            this.winner = this.roundTeam == WHITE ? BLACK : WHITE;
+        else
+            this.winner = null;
 
+        return true;
     }
+
+    /**
+     * Obtém vencedor do jogo, caso jogo já tenha acabado, se for null foi um empate
+     * @return vencedor do jogo
+     */
+    public Team getWinnerTeam() { return this.winner; }
 
     /**
      * Apaga peças temporárias EnPassant da equipa t
