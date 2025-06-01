@@ -20,6 +20,7 @@ import java.util.List;
 
 import static pt.isec.pa.chess.model.ChessGameSerialization.*;
 import static pt.isec.pa.chess.model.data.pieces.PieceType.PAWN;
+import static pt.isec.pa.chess.model.data.pieces.Team.BLACK;
 
 /**
  * ChessGameManager é a Facade do modelo de dados (Model Data), responsável por levar e trazer ações/informações da UI para o modelo de dados
@@ -228,6 +229,16 @@ public class ChessGameManager implements Constants{
             pcs.firePropertyChange(PROP.newRound,null,null);
             ModelLog.getInstance().addLog(piece + " moveu para " + Character.toLowerCase(xAxis[col]) + (8 - row));
 
+            if(ChessGame.Killed()){
+                ChessGame.setWhiteRounds(0);
+                ChessGame.setBlackRounds(0);
+            }else{
+                if (ChessGame.currentPlayer() == BLACK) {
+                    ChessGame.setBlackRounds(ChessGame.getBlackRounds() + 1);
+                } else {
+                    ChessGame.setWhiteRounds(ChessGame.getWhiteRounds() + 1);
+                }
+            }
             return true;
         }
         return false;

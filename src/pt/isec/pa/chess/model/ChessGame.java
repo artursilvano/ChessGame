@@ -29,7 +29,7 @@ public class ChessGame implements Constants, Serializable {
     private String pWhite;
     private String pBlack;
 
-    private int lastDeathCount;
+    private int lastDeathCount,Wrounds,Brounds;
     private Piece selectedPiece = null;
 
     private boolean promotion = false;
@@ -122,7 +122,35 @@ public class ChessGame implements Constants, Serializable {
             return selectedPiece.getPossibilities();
         return null;
     }
+    /**
+     * Obtém o número de jogadas sem capturar do jogador da equipa White
+     * @return int do número de jogadas sem capturar do jogador da equipa White
+     */
+    public int getWhiteRounds(){
+        return this.Wrounds;
+    }
+    /**
+     * Define o número de jogadas sem capturar do jogador da equipa White
+     * @param r int do número de jogadas sem capturar do jogador da equipa White
+     */
+    public void setWhiteRounds(int r){
+        this.Wrounds=r;
 
+    }
+    /**
+     * Obtém o número de jogadas sem capturar do jogador da equipa Black
+     * @return int do número de jogadas sem capturar do jogador da equipa Black
+     */
+    public int getBlackRounds(){
+        return this.Brounds;
+    }
+    /**
+     * Define o número de jogadas sem capturar do jogador da equipa Black
+     * @param r int do número de jogadas sem capturar do jogador da equipa Black
+     */
+    public void setBlackRounds(int r){
+        this.Brounds=r;
+    }
 
     /**
      * Se possível, dentro das regras do jogo, seleciona peça na posição (row, column)
@@ -253,12 +281,64 @@ public class ChessGame implements Constants, Serializable {
         roundTeam = (roundTeam == BLACK) ? WHITE : BLACK;
         cleanEnPassant(roundTeam);
     }
+    /**
+     * Verifica se o jogo se encontra em um estado de Material insuficiente(Ex:2 reis;2 reis,1 cavalo;2 reis,1 bispo;
+     2 reis,2 bispo(bispos nas mesmas cores de casas))
+     * @return true se o jogo se encontra em um estado de Material insuficiente, false se o jogo não se encontra nesse estado
+     */
+    public Boolean insufficientMaterial(){
+        List<Piece> pieces = new ArrayList<>();
+        List<Integer> cores = new ArrayList<>();
+        int knights=0,bishops=0;
+
+
+        for (int l = 0; l < TAM; l++) {
+            for (int c = 0; c < TAM; c++) {
+                if (this.board.getPiece(l, c) != null) {
+                    pieces.add(this.board.getPiece(l, c));
+                }
+            }
+         }
+
+        if(pieces.size() > 4)return false;
+
+        for (Piece p : pieces) {
+            switch (p.getType()) {
+                case BISHOP -> {
+                    bishops++;
+                    int cor = (p.getRow() + p.getColumn()) % 2;
+                    cores.add(cor);
+                }
+                case KNIGHT -> knights++;
+                default -> {return false;}
+            }
+        }
+
+        if(pieces.size()==2) return true;
+
+        if(pieces.size()==3){
+            if(knights==1) return true;
+            if(bishops==1) return true;
+        }
+
+        if(pieces.size()==4){
+            if(bishops==2) {
+                return cores.get(0).equals(cores.get(1));
+            }
+        }
+        return false;
+    }
 
     /**
      * Verifica se o jogo ainda pode ser jogado, ou se já não há jogadas possíveis. Definindo no fim se há um vencedor e quem é.
      * @return true se o jogo acabou, false se o jogo deve continuar
      */
     public Boolean isOver() {
+        if ((Wrounds >= 50 && Brounds >= 50) || insufficientMaterial()) {
+            this.winner = null;
+            return true;
+        }
+
         for (int l = 0; l < TAM; l++) {        // Verifica se alguma das pecas do time que vai jogar tem movimentos possiveis (Se nenhuma peca do time tiver movimentos possiveis, o jogo acaba)
             for (int c = 0; c < TAM; c++) {
                 if (this.board.getPiece(l, c) != null && this.board.getPiece(l, c).getTeam().equals(this.roundTeam)) {
