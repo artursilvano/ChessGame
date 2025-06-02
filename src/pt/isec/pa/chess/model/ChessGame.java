@@ -476,6 +476,16 @@ public class ChessGame implements Constants, Serializable {
         if (this.board.getDeathPieces() == null) return false;
         int currentDeaths = this.board.getDeathPieces().size();
         boolean captured = currentDeaths > lastDeathCount;
+        if (captured) {
+            this.setWhiteRounds(0);
+            this.setBlackRounds(0);
+        } else {
+            if (this.currentPlayer() == BLACK) {
+                this.setBlackRounds(this.getBlackRounds() + 1);
+            } else {
+                this.setWhiteRounds(this.getWhiteRounds() + 1);
+            }
+        }
         lastDeathCount = currentDeaths;
         return captured;
     }

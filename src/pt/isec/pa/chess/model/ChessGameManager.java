@@ -229,16 +229,6 @@ public class ChessGameManager implements Constants{
             pcs.firePropertyChange(PROP.newRound,null,null);
             ModelLog.getInstance().addLog(piece + " moveu para " + Character.toLowerCase(xAxis[col]) + (8 - row));
 
-            if(ChessGame.Killed()){
-                ChessGame.setWhiteRounds(0);
-                ChessGame.setBlackRounds(0);
-            }else{
-                if (ChessGame.currentPlayer() == BLACK) {
-                    ChessGame.setBlackRounds(ChessGame.getBlackRounds() + 1);
-                } else {
-                    ChessGame.setWhiteRounds(ChessGame.getWhiteRounds() + 1);
-                }
-            }
             return true;
         }
         return false;
