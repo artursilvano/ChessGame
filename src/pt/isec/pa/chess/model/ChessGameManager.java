@@ -223,8 +223,6 @@ public class ChessGameManager implements Constants{
                 ChessGame.setPromotion(true);
                 ChessGame.setPieceToPromote(selected);
                 pcs.firePropertyChange(PROP.promWindow, null, null);
-            } else {
-                ChessGame.setPromotion(false);
             }
             pcs.firePropertyChange(PROP.newRound,null,null);
             ModelLog.getInstance().addLog(piece + " moveu para " + Character.toLowerCase(xAxis[col]) + (8 - row));

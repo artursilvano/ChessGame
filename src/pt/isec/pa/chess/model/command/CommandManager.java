@@ -12,8 +12,6 @@ public class CommandManager {
     public CommandManager() {
         history = new ArrayDeque<>();
         redoCmds = new ArrayDeque<>();
-        //history = new Stack<>();
-        //redoCmds = new Stack<>();
     }
 
     public boolean invokeCommand(ICommand cmd) {

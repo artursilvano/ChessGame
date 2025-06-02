@@ -218,6 +218,7 @@ public class ChessBoard extends Canvas {
     }
 
     public void markSelected() {
+        isOver = false;
         GraphicsContext gc = this.getGraphicsContext2D();
         if (!marked && gameManager.GMgetSelectedPiece() != null) {
             Integer[] pieceCoords = gameManager.GMgetPieceCoords(gameManager.GMgetSelectedPiece());
